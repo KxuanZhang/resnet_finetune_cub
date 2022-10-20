@@ -9,15 +9,15 @@ def main():
     parser = argparse.ArgumentParser(
         description='Options for base model finetuning on CUB_200_2011 datasets'
     )
-    parser.add_argument('--batch_size', type=int, default=64,
+    parser.add_argument('--batch_size', type=int, default=6,
                         help='batch size for training')
     parser.add_argument('--base_lr', type=float, default=0.001,
                         help='base learning rate for training')
-    parser.add_argument('--net_choice', type=str, required=True,
+    parser.add_argument('--net_choice', type=str, default="ResNet",
                         help='net_choice for choosing network, whose value is in ["ResNet"]')
-    parser.add_argument('--model_choice', type=int, required=True,
+    parser.add_argument('--model_choice', type=int, default=18,
                         help='model_choice for choosing depth of network, whose value is in [50, 101, 152]')
-    parser.add_argument('--epochs', type=int, default=95,
+    parser.add_argument('--epochs', type=int, default=50,
                         help='batch size for training')
     parser.add_argument('--momentum', type=float, default=0.9,
                         help='momentum for SGD')

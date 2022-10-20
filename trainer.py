@@ -4,6 +4,7 @@ import torch.nn as nn
 import numpy as np
 from models.models_for_cub import ResNet
 from cub import cub200
+from myCUB import myCUB
 import os
 import matplotlib.pyplot as plt
 import shutil
@@ -16,7 +17,7 @@ class NetworkManager(object):
 
         print('Starting to prepare network and data...')
 
-        self.net = nn.DataParallel(self._net_choice(self.options['net_choice'])).to(self.device)
+        self.net = self._net_choice(self.options['net_choice']).to(self.device)
         #self.net.load_state_dict(torch.load('/home/zhangyongshun/se_base_model/model_save/ResNet/backup/epoch120/ResNet50-finetune_fc_cub.pkl'))
         print('Network is as follows:')
         print(self.net)
@@ -44,8 +45,11 @@ class NetworkManager(object):
             transforms.Normalize(mean=(0.485, 0.456, 0.406),
                                  std=(0.229, 0.224, 0.225))
         ]
-        train_data = cub200(self.path['data'], train=True, transform=transforms.Compose(train_transform_list))
-        test_data = cub200(self.path['data'], train=False, transform=transforms.Compose(test_transforms_list))
+        # train_data = cub200(self.path['data'], train=True, transform=transforms.Compose(train_transform_list))
+        # test_data = cub200(self.path['data'], train=False, transform=transforms.Compose(test_transforms_list))
+        train_data = myCUB(self.path['data'], train=True, transform=transforms.Compose(train_transform_list))
+        test_data = myCUB(self.path['data'], train=False, transform=transforms.Compose(test_transforms_list))
+        
         self.train_loader = torch.utils.data.DataLoader(
             train_data, batch_size=self.options['batch_size'], shuffle=True, num_workers=4, pin_memory=True
         )
@@ -126,13 +130,8 @@ class NetworkManager(object):
 
     def _net_choice(self, net_choice):
         if net_choice=='ResNet':
-            return ResNet(pre_trained=True, n_class=200, model_choice=self.options['model_choice'])
-        elif net_choice=='ResNet_ED':
-            return ResNet_ED(pre_trained=True, pre_trained_weight_gpu=True, n_class=200, model_choice=self.options['model_choice'])
-        elif net_choice == 'ResNet_SE':
-            return ResNet_SE(pre_trained=True, pre_trained_weight_gpu=True, n_class=200, model_choice=self.options['model_choice'])
-        elif net_choice == 'ResNet_self':
-            return ResNet_self(pre_trained=True, pre_trained_weight_gpu=True, n_class=200, model_choice=self.options['model_choice'])
+            return ResNet(pre_trained=True, n_class=50, model_choice=self.options['model_choice'])
+        
 
     def adjust_learning_rate(optimizer, epoch, args):
         """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""

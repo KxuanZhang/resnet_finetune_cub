@@ -15,7 +15,9 @@ class ResNet(nn.Module):
         self.n_class = n_class
         self.base_model = self._model_choice(pre_trained, model_choice)
         self.base_model.avgpool = nn.AdaptiveAvgPool2d((1,1))
-        self.base_model.fc = nn.Linear(512*Config.expansion, n_class)
+        # self.base_model.fc = nn.Linear(512*Config.expansion, n_class)
+        num_fts = self.base_model.fc.in_features
+        self.base_model.fc = nn.Linear(num_fts, n_class)
         self.base_model.fc.apply(weight_init_kaiming)
 
     def forward(self, x):
@@ -32,6 +34,8 @@ class ResNet(nn.Module):
             return models.resnet101(pretrained=pre_trained)
         elif model_choice == 152:
             return models.resnet152(pretrained=pre_trained)
+        elif model_choice == 18:
+            return models.resnet18(pretrained=pre_trained)
 
 
 # class ResNet_self(nn.Module):
